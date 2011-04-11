@@ -72,7 +72,7 @@ while(<>) {
  
  if ( $type ne "" )
  {
-   print "$store\t$type,$reponse_code,$response_time,$bytes,$epoch_time\.$msec,$human_time,$method,$uniq_id,$client_ip,$frontend,$backend,$server\n";
+   print "$store\t$type,$reponse_code,$response_time,$bytes,$epoch_time\.$msec,$human_time,$method,$uniq_id,$client_ip,$frontend,$backend,$server,$uri\n";
  } else {
    #print "NOT MATCHED: $logline\n";
  }
