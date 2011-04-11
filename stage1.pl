@@ -28,9 +28,17 @@ while(<>) {
  my $backend = $backend_server[0]; 
  my $server = $backend_server[1]; 
  my @haproxy_timings = split( /\//, $tokens[9]);
- my $response_time = $haproxy_timings[4];
+ my $tq = $haproxy_timings[0];
+ my $tw = $haproxy_timings[1];
+ my $tc = $haproxy_timings[2];
+ my $tr = $haproxy_timings[3];
+ my $tt = $haproxy_timings[4];
  my $reponse_code = $tokens[10];
- my $bytes = $tokens[11];
+ if ( length($tokens[11]) != 0 ) {
+     my $bytes = $tokens[11];
+ } else {
+     my $bytes = 0;
+ }
  my $uniq_id = $tokens[17];
  my $method = $tokens[18];
  my $uri = $tokens[19];
@@ -72,7 +80,7 @@ while(<>) {
  
  if ( $type ne "" )
  {
-   print "$store\t$type,$reponse_code,$response_time,$bytes,$epoch_time\.$msec,$human_time,$method,$uniq_id,$client_ip,$frontend,$backend,$server,$uri\n";
+   print "$store\t$type,$reponse_code,$tt,$bytes,$epoch_time\.$msec,$human_time,$method,$uniq_id,$client_ip,$frontend,$backend,$server,$uri\n";
  } else {
    #print "NOT MATCHED: $logline\n";
  }
