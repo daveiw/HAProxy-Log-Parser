@@ -1,2 +1,2 @@
-Simple perl scripts to parse haproxy logs and create output as either csv for summary stats.
+Simple perl scripts to parse haproxy logs and create output as either csv or summary stats.
 Scripts are to be used as mappers and reducers. Stage1.pl is the mapper which generates key value pairs suitable for input to stage2.pl or csv-out.pl.
