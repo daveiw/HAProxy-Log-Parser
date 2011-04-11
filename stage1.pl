@@ -47,7 +47,7 @@ while(<>) {
  } 
 
  if ( $uri_parts[3] eq "snapshots" ) {
-      $type = $&;
+      $type = $uri_parts[3];
  } 
 
  if ( $uri_parts[3] =~ m/items/ )
