@@ -1,8 +1,20 @@
 #!/usr/bin/perl
 
 use XML::RSS;
+use Cwd;
 
-$rssout = "./top10.rss";
+my $dir = getcwd;
+open(CONFIG, "< $dir/config");
+while (<CONFIG>) {
+	chomp;                  # no newline
+	s/#.*//;                # no comments
+	s/^\s+//;               # no leading white
+	s/\s+$//;               # no trailing white
+	next unless length;     # anything left?
+	my ($var, $value) = split(/\s*=\s*/, $_, 2);
+	$ENV{$var} = $value;
+} 
+close(CONFIG);
 
 while(<>) {
  my $logline = $_;
@@ -47,27 +59,30 @@ while(<>) {
 
 # Generate Top 10 RSS data
 #
-my $rss = new XML::RSS (version => '1.0');
-$rss->channel(
+
+if (defined($ENV{top10rss})) {
+ my $rss = new XML::RSS (version => '1.0');
+ $rss->channel(
         title   =>      "Top 10",
         link    =>      "http://storestats.uks.talis/cgi/report.pl",
         description     => "Platform store requests last min",
-);
+ );
 
-my $links = 0;
-foreach ( sort { $hit{$b} <=> $hit{$a} } keys %hit ) {
-  if ( $links < 10 ) {
-    $rss->add_item(
+  my $links = 0;
+  foreach ( sort { $hit{$b} <=> $hit{$a} } keys %hit ) {
+    if ( $links < 10 ) {
+      $rss->add_item(
         title           => "$_",
         link            => "http://responsetimes.uks.talis/index.php?storename=$_&len=180",
         description     => "$_ ($hit{$_})",
-    );
-    $links++;
+      );
+      $links++;
+    }
   }
+  open(RSS," > $ENV{top10rss}");
+  print RSS $rss->as_string;
+  close(RSS);
 }
-open(RSS," > $rssout");
-print RSS $rss->as_string;
-close(RSS);
 
 # Collectd PUTVAL output 
 #
