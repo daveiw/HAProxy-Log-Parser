@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 
+use XML::RSS;
+
+$rssout = "./top10.rss";
+
 while(<>) {
  my $logline = $_;
  my @tokens = split( /\s+/, $_);
@@ -35,9 +39,35 @@ while(<>) {
     $session_err{$backend_id}++;
  }
 
+ # Record hits against storenames
+ $hit{$store}++;
+
  #print "Store:$store\tfrontend:$frontend_id Backend:$backend_id Server:$server_id Time:$tt Bytes:$bytes Code:$response_code Term:$term\n";
 }
 
+# Generate Top 10 RSS data
+#
+my $rss = new XML::RSS (version => '1.0');
+$rss->channel(
+        title   =>      "Top 10",
+        link    =>      "http://storestats.uks.talis/cgi/report.pl",
+        description     => "Platform store requests last min",
+);
+
+my $links = 0;
+foreach ( sort { $hit{$b} <=> $hit{$a} } keys %hit ) {
+  if ( $links < 10 ) {
+    $rss->add_item(
+        title           => "$_",
+        link            => "http://responsetimes.uks.talis/index.php?storename=$_&len=180",
+        description     => "$_ ($hit{$_})",
+    );
+    $links++;
+  }
+}
+open(RSS," > $rssout");
+print RSS $rss->as_string;
+close(RSS);
 
 # Collectd PUTVAL output 
 #
