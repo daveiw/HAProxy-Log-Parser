@@ -115,7 +115,7 @@ while(<>) {
  
  if ( $type ne "" )
  {
-   print "$store\t$type,$reponse_code,$tt,$bytes,$epoch_time\.$msec,$human_date,$method,$uniq_id,$client_ip,$frontend,$backend,$server,$uri,$term_state\n";
+   print "$store\t$type,$reponse_code,$tt,$bytes,$epoch_time\.$msec,$human_date,$method,$uniq_id,$client_ip,$frontend,$backend,$server,$term_state,$uri\n";
  } else {
    #print "NOT MATCHED: $logline\n";
  }

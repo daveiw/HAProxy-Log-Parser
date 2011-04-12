@@ -12,7 +12,7 @@ while(<>) {
  my $server_id = $vals[11];
  my $tt = $vals[2];
  my $response_code = $vals[1];
- my $term = $vals[13];
+ my $term = $vals[12];
 
  # remove any hyphens, they are significant to collectd
  $frontend_id =~ s/\-/_/g;
