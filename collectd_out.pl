@@ -6,6 +6,7 @@ while(<>) {
  my $store = $tokens[0];
  my @vals = split(/,/, $tokens[1]);
 
+ my $type = $vals[0];
  my $bytes = $vals[3];
  my $frontend_id = $vals[9];
  my $backend_id = $vals[10];
@@ -26,6 +27,7 @@ while(<>) {
  $backend_bytes{$backend_id} += $bytes;
  $server{$server_id}++;
  $server_bytes{$server_id} += $bytes;
+ $requests{$type}++;
 
  if ( "$term" eq "server_error" ) {
     $session_err{$server_id}++;
@@ -66,4 +68,6 @@ foreach my $server ( keys %server ) {
 foreach ( keys %response_codes ) {
         print "PUTVAL ha-00.uks.talis/haproxy/haproxy_response_codes-$_ interval=60 N:$response_codes{$_}\n";
 }
-
+for $type ( keys %requests ) {
+	print "PUTVAL ha-00.uks.talis/haproxy/api_requests-$type interval=60 N:$requests{$type} \n";
+}
