@@ -3,6 +3,10 @@
 use XML::RSS;
 use Cwd;
 
+sub hashValueAssending {
+  $hotlist{$b} <=> $hotlist{$a};
+}
+
 my $dir = getcwd;
 open(CONFIG, "< $dir/config");
 while (<CONFIG>) {
@@ -23,6 +27,8 @@ while(<>) {
  my @vals = split(/,/, $tokens[1]);
 
  my $type = $vals[0];
+ my $code = $vals[1];
+ my $method = $vals[6];
  my $bytes = $vals[3];
  my $frontend_id = $vals[9];
  my $backend_id = $vals[10];
@@ -54,6 +60,11 @@ while(<>) {
  # Record hits against storenames
  $hit{$store}++;
 
+ # Hot list stats
+ my $hotkey = $store . "_" . $type . "_" . $code . "_" . $method;
+ my $hot = ( $code * $time );
+ $hotlist{$hotkey}+= $hot;
+
  #print "Store:$store\tfrontend:$frontend_id Backend:$backend_id Server:$server_id Time:$tt Bytes:$bytes Code:$response_code Term:$term\n";
 }
 
@@ -62,13 +73,13 @@ while(<>) {
 
 if (defined($ENV{top10rss})) {
  my $rss = new XML::RSS (version => '1.0');
+ my $links = 0;
  $rss->channel(
         title   =>      "Top 10",
         link    =>      "http://storestats.uks.talis/cgi/report.pl",
         description     => "Platform store requests last min",
  );
 
-  my $links = 0;
   foreach ( sort { $hit{$b} <=> $hit{$a} } keys %hit ) {
     if ( $links < 10 ) {
       $rss->add_item(
@@ -83,6 +94,36 @@ if (defined($ENV{top10rss})) {
   print RSS $rss->as_string;
   close(RSS);
 }
+
+if (defined($ENV{hotrss})) {
+  my $hotrss = new XML::RSS (version => '1.0');
+  my $hotcount = 0;
+  $hotrss->channel(
+        title   =>      "Hot List",
+        link    =>      "http://storestats.uks.talis/cgi/report.pl",
+        description     => "Top 20 Hot stores",
+  );
+
+  foreach $key ( sort hashValueAssending ( keys(%hotlist) )) {
+   my @data = split( /_/, $key);
+
+   $hotrss->add_item(
+        title           => "$data[0] $data[1] $data[2] $data[3]",
+        link            => "http://responsetimes.uks.talis?storename=$data[0]",
+        description     => "$data[0] ($requests{$key}) $data[3] $data[1] $data[2] ",
+   );
+
+   $hotcount++;
+   if ( $hotcount >= 10 ) {
+        last;
+   }
+  }
+
+  open(HOTRSS," > $ENV{hotrss}");
+  print HOTRSS $hotrss->as_string;
+  close(HOTRSS);
+}
+
 
 # Collectd PUTVAL output 
 #

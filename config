@@ -2,3 +2,5 @@
 # if top10rss is set then top 10 RSS will be written to file location eg:
 #top10rss=/var/www/html/top10.rss
 top10rss=/tmp/top10.rss
+# if hotrss is defined it will output hotlist RSS
+hotrss=/tmp/hotlist.rss
