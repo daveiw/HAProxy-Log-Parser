@@ -62,7 +62,7 @@ while(<>) {
 
  # Hot list stats
  my $hotkey = $store . "_" . $type . "_" . $code . "_" . $method;
- my $hot = ( $code * $time );
+ my $hot = ( $code * $tt );
  $hotlist{$hotkey}+= $hot;
 
  #print "Store:$store\tfrontend:$frontend_id Backend:$backend_id Server:$server_id Time:$tt Bytes:$bytes Code:$response_code Term:$term\n";
@@ -110,7 +110,7 @@ if (defined($ENV{hotrss})) {
    $hotrss->add_item(
         title           => "$data[0] $data[1] $data[2] $data[3]",
         link            => "http://responsetimes.uks.talis?storename=$data[0]",
-        description     => "$data[0] ($requests{$key}) $data[3] $data[1] $data[2] ",
+        description     => "$data[0] ($hotlist{$key}) $data[3] $data[1] $data[2] ",
    );
 
    $hotcount++;
