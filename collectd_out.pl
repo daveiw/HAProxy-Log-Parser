@@ -101,16 +101,16 @@ if (defined($ENV{hotrss})) {
   $hotrss->channel(
         title   =>      "Hot List",
         link    =>      "http://storestats.uks.talis/cgi/report.pl",
-        description     => "Top 20 Hot stores",
+        description     => "Top 10 Hot stores",
   );
 
   foreach $key ( sort hashValueAssending ( keys(%hotlist) )) {
    my @data = split( /_/, $key);
 
    $hotrss->add_item(
-        title           => "$data[0] $data[1] $data[2] $data[3]",
+        title           => "$data[0]",
         link            => "http://responsetimes.uks.talis?storename=$data[0]",
-        description     => "$data[0] ($hotlist{$key}) $data[3] $data[1] $data[2] ",
+        description     => "$data[0] $data[3] $data[1] $data[2]",
    );
 
    $hotcount++;
