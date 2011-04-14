@@ -69,6 +69,7 @@ while(<>) {
 
  # Compile storestats data
  $storerequests{$store}{$type}++;
+ $storertime{$store}{$type}+=$tt;
 
  #print "Store:$store\tfrontend:$frontend_id Backend:$backend_id Server:$server_id Time:$tt Bytes:$bytes Code:$response_code Term:$term\n";
 }
@@ -165,15 +166,20 @@ for $type ( keys %requests ) {
 # expand storestats data
 for $store ( keys %storerequests ) {
 	$putval = "N";
+	$putval_rtime = "N";
 	foreach (@types) {
 		if (defined($storerequests{$store}{$_})) {
 			$number = $storerequests{$store}{$_};
+			$ave_rtime = $storertime{$store}{$_} / $storerequests{$store}{$_};
 		} else {
 			$number = 0;
+			$ave_rtime = 0;
 		} 
 		$putval = "$putval" . ":$number";
+		$putval_rtime = "$putval_rtime" . ":$ave_rtime";
 	}
 	# uri encode store name for output to Collectd
 	my $uriencstore = uri_escape($store,"^A-Za-z0-9");
 	print "PUTVAL api.talis.com/storestats/store_requests-$uriencstore interval=60 $putval \n";
+	print "PUTVAL api.talis.com/storestats/store_rtime-$uriencstore interval=60 $putval_rtime \n";
 }
