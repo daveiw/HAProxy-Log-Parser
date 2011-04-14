@@ -175,5 +175,5 @@ for $store ( keys %storerequests ) {
 	}
 	# uri encode store name for output to Collectd
 	my $uriencstore = uri_escape($store,"^A-Za-z0-9");
-	print "PUTVAL api.talis.com/storestats/store_requests-$uriencstore $putval \n";
+	print "PUTVAL api.talis.com/storestats/store_requests-$uriencstore interval=60 $putval \n";
 }
