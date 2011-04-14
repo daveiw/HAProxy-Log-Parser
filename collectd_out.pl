@@ -2,6 +2,7 @@
 
 use XML::RSS;
 use Cwd;
+use URI::Escape;
 
 sub hashValueAssending {
   $hotlist{$b} <=> $hotlist{$a};
@@ -19,6 +20,7 @@ while (<CONFIG>) {
 	$ENV{$var} = $value;
 } 
 close(CONFIG);
+my @types = qw(facet sparql augment oai-pmh multisparql jobs config snapshots items items_query meta meta_describe);
 
 while(<>) {
  my $logline = $_;
@@ -64,6 +66,9 @@ while(<>) {
  my $hotkey = $store . "_" . $type . "_" . $code . "_" . $method;
  my $hot = ( $code * $tt );
  $hotlist{$hotkey}+= $hot;
+
+ # Compile storestats data
+ $storerequests{$store}{$type}++;
 
  #print "Store:$store\tfrontend:$frontend_id Backend:$backend_id Server:$server_id Time:$tt Bytes:$bytes Code:$response_code Term:$term\n";
 }
@@ -156,4 +161,19 @@ foreach ( keys %response_codes ) {
 }
 for $type ( keys %requests ) {
 	print "PUTVAL ha-00.uks.talis/haproxy/api_requests-$type interval=60 N:$requests{$type} \n";
+}
+# expand storestats data
+for $store ( keys %storerequests ) {
+	$putval = "N";
+	foreach (@types) {
+		if (defined($storerequests{$store}{$_})) {
+			$number = $storerequests{$store}{$_};
+		} else {
+			$number = 0;
+		} 
+		$putval = "$putval" . ":$number";
+	}
+	# uri encode store name for output to Collectd
+	my $uriencstore = uri_escape($store,"^A-Za-z0-9");
+	print "PUTVAL api.talis.com/storestats/store_requests-$uriencstore $putval \n";
 }
