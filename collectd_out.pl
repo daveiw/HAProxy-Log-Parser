@@ -82,7 +82,7 @@ if (defined($ENV{top10rss})) {
  my $links = 0;
  $rss->channel(
         title   =>      "Top 10",
-        link    =>      "http://storestats.uks.talis/cgi/report.pl",
+        link    =>      "http://judy.uks.talis",
         description     => "Platform store requests last min",
  );
 
@@ -90,7 +90,7 @@ if (defined($ENV{top10rss})) {
     if ( $links < 10 ) {
       $rss->add_item(
         title           => "$_",
-        link            => "http://responsetimes.uks.talis/index.php?storename=$_&len=180",
+        link            => "http://judy.uks.talis/graph.php?store=$_&time=180",
         description     => "$_ ($hit{$_})",
       );
       $links++;
@@ -106,7 +106,7 @@ if (defined($ENV{hotrss})) {
   my $hotcount = 0;
   $hotrss->channel(
         title   =>      "Hot List",
-        link    =>      "http://storestats.uks.talis/cgi/report.pl",
+        link    =>      "http://judy.uks.talis",
         description     => "Top 10 Hot stores",
   );
 
@@ -115,7 +115,7 @@ if (defined($ENV{hotrss})) {
 
    $hotrss->add_item(
         title           => "$data[0]",
-        link            => "http://responsetimes.uks.talis?storename=$data[0]",
+        link            => "http://judy.uks.talis/graph.php?store=$data[0]",
         description     => "$data[0] $data[3] $data[1] $data[2]",
    );
 
